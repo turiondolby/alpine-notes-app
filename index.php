@@ -54,7 +54,7 @@
 
                 <nav class="min-h-0 flex-1 overflow-y-auto">
                     <ul x-data class="border-b border-gray-200 divide-y divide-gray-200">
-                        <template x-for="note in $store.notes.data" :key="note.id">
+                        <template x-for="note in $store.notes.orderedByLastEdited" :key="note.id">
                             <li class="relative bg-white py-5 px-6 hover:bg-gray-50 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600">
                                 <div class="flex justify-between space-x-3">
                                     <a href="#" class="block focus:outline-none">
@@ -79,13 +79,17 @@
         document.addEventListener('alpine:init', () => {
             Alpine.store('notes', {
                 data: [
-                    // { id: 1, title: 'Existing Note', body: 'A new body'},
-                    // { id: 2, title: 'Another Existing Note', body: 'A new body'},
+                    { id: 1, title: 'Existing Note', body: 'A new body', lastEdited: 2 },
+                    { id: 2, title: 'Another Existing Note', body: 'A new body', lastEdited: 1 },
                 ],
                 currentNoteId: null,
 
                 get current() {
                     return this.data.find(n => n.id === this.currentNoteId);
+                },
+
+                get orderedByLastEdited() {
+                    return this.data.sort((a, b) => b.lastEdited - a.lastEdited);
                 },
 
                 createNote() {
@@ -103,7 +107,7 @@
                 },
 
                 setCurrentNoteByIndex(index) {
-                    this.currentNoteId = this.data[index].id;
+                    this.currentNoteId = this.orderedByLastEdited[index].id;
                 },
 
                 init() {
