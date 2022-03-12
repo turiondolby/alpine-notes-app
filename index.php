@@ -25,7 +25,11 @@
                               autofocus></textarea>
 
                     <div>
-                        <button class="text-sm text-gray-900">Delete note</button>
+                        <button @click="if (window.confirm('Are you sure?')) { $store.notes.deleteNote($store.notes.currentNoteId) }"
+                                class="text-sm text-gray-900"
+                        >
+                            Delete note
+                        </button>
                     </div>
                 </div>
             </div>
@@ -101,6 +105,17 @@
 
                 setCurrentNoteByIndex(index) {
                     this.currentNoteId = this.orderedByLastEdited[index].id;
+                },
+
+                deleteNote(id) {
+                    if (this.data.length === 1) {
+                        this.createNote();
+                    }
+
+                    this.data = this.data.filter(n => n.id !== id);
+                    this.persistNotes();
+
+                    this.setCurrentNoteByIndex(0);
                 },
 
                 init() {
