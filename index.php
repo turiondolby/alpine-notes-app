@@ -11,15 +11,6 @@
 
 </head>
 <body>
-    <span
-        x-data="{
-            init() {
-                console.log(this.$store.notes.data)
-            }
-        }"
-    >
-
-    </span>
     <div class="h-screen overflow-hidden bg-gray-100 flex flex-col">
         <main class="min-w-0 flex-1 border-t border-gray-200 flex min-h-0 overflow-hidden">
             <div class="min-h-0 flex-1 overflow-y-scroll bg-white h-full w-full flex">
@@ -41,14 +32,14 @@
 
             <aside class="block flex-shrink-0 order-first h-full relative flex flex-col w-96 border-r border-gray-200 bg-gray-100">
                 <div class="flex-shrink-0 h-16 bg-white px-6 flex flex-col justify-center">
-                    <div class="flex justify-between space-x-3">
+                    <div x-data class="flex justify-between space-x-3">
                         <div class="flex items-baseline">
                             <h2 class="text-lg font-medium text-gray-900 mr-3">
                                 Notes
                             </h2>
                             <p class="text-sm font-medium text-gray-500"></p>
                         </div>
-                        <button class="text-sm">New note</button>
+                        <button @click="$store.notes.createNote()" class="text-sm">New note</button>
                     </div>
                 </div>
 
@@ -78,10 +69,7 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.store('notes', {
-                data: [
-                    { id: 1, title: 'Existing Note', body: 'A new body', lastEdited: 2 },
-                    { id: 2, title: 'Another Existing Note', body: 'A new body', lastEdited: 1 },
-                ],
+                data: JSON.parse(localStorage.getItem('notes')) || [],
                 currentNoteId: null,
 
                 get current() {
@@ -104,6 +92,11 @@
 
                 touchCurrentNote() {
                     this.current.lastEdited = Date.now();
+                    this.persistNotes();
+                },
+
+                persistNotes() {
+                    localStorage.setItem('notes', JSON.stringify(this.data));
                 },
 
                 setCurrentNoteByIndex(index) {
@@ -111,7 +104,6 @@
                 },
 
                 init() {
-                    // don't create note if notes exist
                     if (this.data.length) {
                         this.setCurrentNoteByIndex(0);
                     }
