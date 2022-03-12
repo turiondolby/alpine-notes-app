@@ -57,7 +57,7 @@
                         <template x-for="note in $store.notes.orderedByLastEdited" :key="note.id">
                             <li class="relative bg-white py-5 px-6 hover:bg-gray-50 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600">
                                 <div class="flex justify-between space-x-3">
-                                    <a href="#" class="block focus:outline-none">
+                                    <a @click.prevent="$store.notes.currentNoteId = note.id" href="#" class="block focus:outline-none">
                                         <span class="absolute inset-0"></span>
                                         <p x-text="note.title || 'Untitled Note'" class="text-sm text-gray-500 truncate"></p>
                                     </a>
