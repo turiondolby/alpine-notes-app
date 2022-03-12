@@ -24,9 +24,14 @@
         <main class="min-w-0 flex-1 border-t border-gray-200 flex min-h-0 overflow-hidden">
             <div class="min-h-0 flex-1 overflow-y-scroll bg-white h-full w-full flex">
                 <div x-data class="p-6 w-full flex flex-col">
-                    <input x-model="$store.notes.current.title" type="text" class="text-lg font-medium text-gray-900 w-full mb-6" placeholder="Untitled note">
+                    <input x-model="$store.notes.current.title"
+                           @keyup.debounce.200ms="$store.notes.touchCurrentNote()" type="text"
+                           class="text-lg font-medium text-gray-900 w-full mb-6" placeholder="Untitled note">
 
-                    <textarea x-model="$store.notes.current.body" class="w-full mb-6 flex-1 outline-none" placeholder="Start writing..." autofocus></textarea>
+                    <textarea x-model="$store.notes.current.body"
+                              @keyup.debounce.200ms="$store.notes.touchCurrentNote()"
+                              class="w-full mb-6 flex-1 outline-none" placeholder="Start writing..."
+                              autofocus></textarea>
 
                     <div>
                         <button class="text-sm text-gray-900">Delete note</button>
@@ -57,7 +62,7 @@
                                         <p x-text="note.title || 'Untitled Note'" class="text-sm text-gray-500 truncate"></p>
                                     </a>
 
-                                    <time class="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">00:00</time>
+                                    <time x-text="`${new Date(note.lastEdited).toLocaleTimeString()}`" class="flex-shrink-0 whitespace-nowrap text-sm text-gray-500"></time>
                                 </div>
                                 <div class="mt-1">
                                     <p x-text="note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body" class="text-sm text-gray-600"></p>
@@ -74,8 +79,8 @@
         document.addEventListener('alpine:init', () => {
             Alpine.store('notes', {
                 data: [
-                    { id: 1, title: 'Existing Note', body: 'A new body'},
-                    { id: 2, title: 'Another Existing Note', body: 'A new body'},
+                    // { id: 1, title: 'Existing Note', body: 'A new body'},
+                    // { id: 2, title: 'Another Existing Note', body: 'A new body'},
                 ],
                 currentNoteId: null,
 
@@ -86,9 +91,15 @@
                 createNote() {
                     let id = Date.now();
 
-                    this.data = [{id, title: '', body: ''}, ...this.data];
+                    this.data = [{id, title: '', body: '', lastEdited: 0}, ...this.data];
 
                     this.currentNoteId = id;
+
+                    this.touchCurrentNote();
+                },
+
+                touchCurrentNote() {
+                    this.current.lastEdited = Date.now();
                 },
 
                 setCurrentNoteByIndex(index) {
