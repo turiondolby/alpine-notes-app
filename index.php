@@ -13,7 +13,7 @@
 <body>
     <span
         x-data="{
-            init () {
+            init() {
                 console.log(this.$store.notes.data)
             }
         }"
@@ -23,10 +23,10 @@
     <div class="h-screen overflow-hidden bg-gray-100 flex flex-col">
         <main class="min-w-0 flex-1 border-t border-gray-200 flex min-h-0 overflow-hidden">
             <div class="min-h-0 flex-1 overflow-y-scroll bg-white h-full w-full flex">
-                <div class="p-6 w-full flex flex-col">
-                    <input type="text" class="text-lg font-medium text-gray-900 w-full mb-6" placeholder="Untitled note">
+                <div x-data class="p-6 w-full flex flex-col">
+                    <input x-model="$store.notes.current.title" type="text" class="text-lg font-medium text-gray-900 w-full mb-6" placeholder="Untitled note">
 
-                    <textarea class="w-full mb-6 flex-1 outline-none" placeholder="Start writing..." autofocus></textarea>
+                    <textarea x-model="$store.notes.current.body" class="w-full mb-6 flex-1 outline-none" placeholder="Start writing..." autofocus></textarea>
 
                     <div>
                         <button class="text-sm text-gray-900">Delete note</button>
@@ -72,14 +72,21 @@
         document.addEventListener('alpine:init', () => {
             Alpine.store('notes', {
                 data: [],
+                currentNoteId: null,
 
-                createNote () {
-                    let id = Date.now();
-
-                    this.data = [{id, title: '', body: ''}, ...this.data]
+                get current() {
+                    return this.data.find(n => n.id === this.currentNoteId);
                 },
 
-                init () {
+                createNote() {
+                    let id = Date.now();
+
+                    this.data = [{id, title: '', body: ''}, ...this.data];
+
+                    this.currentNoteId = id;
+                },
+
+                init() {
                     // don't create note if notes exist
                     if (this.data.length) {
                         // set current note 1st item in notes []
