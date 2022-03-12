@@ -7,8 +7,19 @@
     <title>Notes app</title>
 
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 </head>
 <body>
+    <span
+        x-data="{
+            init () {
+                console.log(this.$store.notes.data)
+            }
+        }"
+    >
+
+    </span>
     <div class="h-screen overflow-hidden bg-gray-100 flex flex-col">
         <main class="min-w-0 flex-1 border-t border-gray-200 flex min-h-0 overflow-hidden">
             <div class="min-h-0 flex-1 overflow-y-scroll bg-white h-full w-full flex">
@@ -56,5 +67,29 @@
             </aside>
         </main>
     </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('notes', {
+                data: [],
+
+                createNote () {
+                    let id = Date.now();
+
+                    this.data = [{id, title: '', body: ''}, ...this.data]
+                },
+
+                init () {
+                    // don't create note if notes exist
+                    if (this.data.length) {
+                        // set current note 1st item in notes []
+                    }
+                    else {
+                        this.createNote()
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
