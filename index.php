@@ -48,20 +48,22 @@
                 </div>
 
                 <nav class="min-h-0 flex-1 overflow-y-auto">
-                    <ul class="border-b border-gray-200 divide-y divide-gray-200">
-                        <li class="relative bg-white py-5 px-6 hover:bg-gray-50 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600">
-                            <div class="flex justify-between space-x-3">
-                                <a href="#" class="block focus:outline-none">
-                                    <span class="absolute inset-0"></span>
-                                    <p class="text-sm text-gray-500 truncate">Note title</p>
-                                </a>
+                    <ul x-data class="border-b border-gray-200 divide-y divide-gray-200">
+                        <template x-for="note in $store.notes.data" :key="note.id">
+                            <li class="relative bg-white py-5 px-6 hover:bg-gray-50 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600">
+                                <div class="flex justify-between space-x-3">
+                                    <a href="#" class="block focus:outline-none">
+                                        <span class="absolute inset-0"></span>
+                                        <p x-text="note.title || 'Untitled Note'" class="text-sm text-gray-500 truncate"></p>
+                                    </a>
 
-                                <time class="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">00:00</time>
-                            </div>
-                            <div class="mt-1">
-                                <p class="text-sm text-gray-600">Body preview</p>
-                            </div>
-                        </li>
+                                    <time class="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">00:00</time>
+                                </div>
+                                <div class="mt-1">
+                                    <p x-text="note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body" class="text-sm text-gray-600"></p>
+                                </div>
+                            </li>
+                        </template>
                     </ul>
                 </nav>
             </aside>
@@ -71,7 +73,10 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.store('notes', {
-                data: [],
+                data: [
+                    { id: 1, title: 'Existing Note', body: 'A new body'},
+                    { id: 2, title: 'Another Existing Note', body: 'A new body'},
+                ],
                 currentNoteId: null,
 
                 get current() {
@@ -86,15 +91,20 @@
                     this.currentNoteId = id;
                 },
 
+                setCurrentNoteByIndex(index) {
+                    this.currentNoteId = this.data[index].id;
+                },
+
                 init() {
                     // don't create note if notes exist
                     if (this.data.length) {
-                        // set current note 1st item in notes []
+                        this.setCurrentNoteByIndex(0);
                     }
                     else {
                         this.createNote()
                     }
-                }
+                },
+
             });
         });
     </script>
